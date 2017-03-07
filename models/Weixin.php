@@ -19,6 +19,7 @@ class Weixin extends Object
 
     public $mchId;
     public $mchKey;
+    public $mchSecret;
 
     public $certFile;
     public $certKey;
@@ -123,7 +124,7 @@ class Weixin extends Object
         return $access_token;
     }
 
-    public static function makeSign($values)
+    public function makeSign($values)
     {
         ksort($values);
         $buff = "";
@@ -134,27 +135,7 @@ class Weixin extends Object
         }
         $string = trim($buff, "&");
         //签名步骤二：在string后加入KEY
-        $string = $string . "&key=" . Yii::$app->params['wx_pay_key'];
-        Yii::warning('wx_pay_string:' . $string);
-        //签名步骤三：MD5加密
-        $string = md5($string);
-        //签名步骤四：所有字符转为大写
-        $result = strtoupper($string);
-        return $result;
-    }
-
-    public function makeMySign($values)
-    {
-        ksort($values);
-        $buff = "";
-        foreach ($values as $k => $v) {
-            if ($k != "sign" && $v != "" && !is_array($v)) {
-                $buff .= $k . "=" . $v . "&";
-            }
-        }
-        $string = trim($buff, "&");
-        //签名步骤二：在string后加入KEY
-        $string = $string . "&key=" . $this->appPayKey;
+        $string = $string . "&key=" . $this->mchSecret;
         Yii::warning('wx_pay_string:' . $string);
         //签名步骤三：MD5加密
         $string = md5($string);
@@ -247,7 +228,7 @@ class Weixin extends Object
     }
 
     /**
-     * 通过code获取用户open_id，用于公众号网页
+     * 通过code获取用户open_id，用于小程序
      *
      * @param $code
      * @return bool|mixed
