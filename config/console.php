@@ -10,7 +10,7 @@ $config = [
     'bootstrap' => ['log'],
     'controllerNamespace' => 'app\commands',
     'aliases' => [
-        '@caoxiang' => '@app/models',
+        '@caoxiang/weixin' => '@app/models',
     ],
     'components' => [
         'cache' => [
