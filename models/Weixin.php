@@ -19,6 +19,7 @@ use yii\web\View;
  *
  * @property string $appTokenName
  * @property string $webTokenName
+ * @property boolean $isWeixin
  */
 class Weixin extends Object
 {
