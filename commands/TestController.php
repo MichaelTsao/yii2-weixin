@@ -7,6 +7,7 @@
 
 namespace app\commands;
 
+use caoxiang\Weixin;
 use yii\console\Controller;
 
 /**
@@ -17,14 +18,18 @@ use yii\console\Controller;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class HelloController extends Controller
+class TestController extends Controller
 {
     /**
      * This command echoes what you have entered as the message.
      * @param string $message the message to be echoed.
      */
-    public function actionIndex($message = 'hello world')
+    public function actionIndex()
     {
-        echo $message . "\n";
+        $weixin = new Weixin();
+        $weixin->appId = 'wx37c81fe0f40f5093';
+        $weixin->appSecret = '5fd8c4141656928dfa004f85348b4e4a';
+
+        var_dump($weixin->getSign());
     }
 }

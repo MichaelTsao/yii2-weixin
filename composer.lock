@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "49003b7530ca94f509949a8b8fa44b8e",
-    "content-hash": "46ed06f599bc362ad8bd9f90839d8de1",
+    "hash": "60acbc10968c006a15de78978e8c0957",
+    "content-hash": "ba6eae1c664dc329a5d7aa4a20b5b32e",
     "packages": [
         {
             "name": "bower-asset/jquery",
@@ -453,6 +453,54 @@
                 "yii2"
             ],
             "time": "2017-02-15 14:28:44"
+        },
+        {
+            "name": "yiisoft/yii2-redis",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yiisoft/yii2-redis.git",
+                "reference": "c1ada15bd8ba617b6fd295b5acf62bab0258eb18"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://files.phpcomposer.com/files/yiisoft/yii2-redis/c1ada15bd8ba617b6fd295b5acf62bab0258eb18.zip",
+                "reference": "c1ada15bd8ba617b6fd295b5acf62bab0258eb18",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "~2.0.4"
+            },
+            "type": "yii2-extension",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "yii\\redis\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Carsten Brandt",
+                    "email": "mail@cebe.cc"
+                }
+            ],
+            "description": "Redis Cache, Session and ActiveRecord for the Yii framework",
+            "keywords": [
+                "active-record",
+                "cache",
+                "redis",
+                "session",
+                "yii2"
+            ],
+            "time": "2017-02-01 11:57:18"
         }
     ],
     "packages-dev": [
