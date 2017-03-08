@@ -551,6 +551,8 @@ class Weixin extends Object
      */
     public function share($view, $config)
     {
+        $view->registerJsFile('http://res.wx.qq.com/open/js/jweixin-1.0.0.js', ['depends' => 'yii\web\YiiAsset']);
+
         $sign = $this->getSign();
         $script = "
             wx.config({
