@@ -565,7 +565,7 @@ class Weixin extends Object
                 'uploadVoice','downloadVoice','chooseWXPay']
                 });
             ";
-        $view->registerJs($script, View::POS_HEAD);
+        $view->registerJs($script);
 
         $script = sprintf("
             wx.ready(function () {
