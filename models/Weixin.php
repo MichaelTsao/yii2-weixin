@@ -72,12 +72,14 @@ class Weixin extends Object
      */
     protected function api($action, $data, $method = 'get')
     {
-        return (new Client)->createRequest()
+        $http = (new Client)->createRequest()
             ->setMethod($method)
-            ->setFormat(Client::FORMAT_JSON)
             ->setUrl('https://api.weixin.qq.com/cgi-bin/' . $action)
-            ->setData($data)
-            ->send();
+            ->setData($data);
+        if ($method == 'post') {
+            $http->setFormat(Client::FORMAT_JSON);
+        }
+        return $http->send();
     }
 
     /**
