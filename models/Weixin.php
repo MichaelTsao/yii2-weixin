@@ -518,8 +518,7 @@ class Weixin extends Object
             $params[$key] = ['value' => $value];
         }
 
-        $response = $this->api('message/template/send?access_token=' . $this->getServerToken(), [
-            'access_token' => $this->getServerToken(),
+        $response = $this->api('message/template/send?access_token=' . $this->getServerToken(),
             [
                 'touser' => $open_id,
                 'template_id' => $template,
@@ -527,7 +526,7 @@ class Weixin extends Object
                 'data' => $params,
             ],
             'post'
-        ]);
+        );
         if ($response->isOk) {
             return $response->data;
         }
