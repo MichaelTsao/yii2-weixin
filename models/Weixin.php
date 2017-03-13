@@ -515,6 +515,10 @@ class Weixin extends Object
      */
     public function push($template, $open_id, $param, $target_url)
     {
+        if (!$open_id || !$template) {
+            return false;
+        }
+
         $params = [];
         foreach ($param as $key => $value) {
             $params[$key] = ['value' => $value];
