@@ -11,7 +11,6 @@ namespace caoxiang\weixin;
 use yii\base\Object;
 use yii\httpclient\Client;
 use Yii;
-use yii\web\View;
 
 /**
  * Class Weixin
@@ -75,6 +74,7 @@ class Weixin extends Object
     {
         return (new Client)->createRequest()
             ->setMethod($method)
+            ->setFormat(Client::FORMAT_JSON)
             ->setUrl('https://api.weixin.qq.com/cgi-bin/' . $action)
             ->setData($data)
             ->send();

@@ -7,7 +7,7 @@
 
 namespace app\commands;
 
-use caoxiang\Weixin;
+use caoxiang\weixin\Weixin;
 use yii\console\Controller;
 
 /**
@@ -30,6 +30,13 @@ class TestController extends Controller
         $weixin->appId = 'wx37c81fe0f40f5093';
         $weixin->appSecret = '5fd8c4141656928dfa004f85348b4e4a';
 
-        var_dump($weixin->getSign());
+        $r = $weixin->push('ZvWaaAZ6JpFpsaLE4jU5Bdn9mx0AfU1g0Fngc9EB01w', 'opBoAt-Dzhrxf3Lsd1m-pAnZ6gNk', [
+            'first' => '您的加入班级申请已通过！',
+            'keyword1' => '加入',
+            'keyword2'=>'通过',
+            'keyword3'=>'2016-10-26 17:45',
+            'remark'=>'您可以'
+        ], 'http://www.baidu.com');
+        var_dump($r);
     }
 }
