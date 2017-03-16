@@ -80,14 +80,15 @@ class Weixin extends Object
             $http->setFormat(Client::FORMAT_JSON);
         }
 
-        $response = null;
-        for ($i = 0; $i < 3; $i++) {
-            $response = $http->send();
-            if ($response->isOk) {
-                break;
-            }
-        }
+//        $response = null;
+//        for ($i = 0; $i < 3; $i++) {
+//            $response = $http->send();
+//            if ($response->isOk) {
+//                break;
+//            }
+//        }
 
+        $response = $http->send();
         return $response;
     }
 
