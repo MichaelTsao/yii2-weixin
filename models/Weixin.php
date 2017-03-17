@@ -584,7 +584,7 @@ class Weixin extends Object
             ";
         $view->registerJs($script);
 
-        $script = sprintf("
+        $script = "
             wx.ready(function () {
                 wx.onMenuShareAppMessage({
                     title: '{$config->messageTitle}',
@@ -598,8 +598,7 @@ class Weixin extends Object
                     imgUrl: '{$config->timeLineImage}'
                 });
             });
-            ",
-            $config);
+            ";
         $view->registerJs($script);
     }
 }
