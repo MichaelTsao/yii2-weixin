@@ -554,6 +554,9 @@ class Weixin extends Object
      */
     public function getIsWeixin()
     {
+        if (isset(Yii::$app->params['notWeixin'])) {
+            return false;
+        }
         if ($this->_isWeixin === null) {
             $this->_isWeixin = !empty(strstr(strtolower(Yii::$app->request->userAgent), 'micromessenger'));
         }
