@@ -481,7 +481,7 @@ class Weixin extends Object
             'signType' => 'MD5',
         ];
         $js_param['paySign'] = $this->makeSign($js_param);
-        return json_encode($js_param);
+        return $js_param;
     }
 
     /*
