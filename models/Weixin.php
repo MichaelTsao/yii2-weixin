@@ -113,13 +113,9 @@ class Weixin extends Object
      * @param string $method
      * @return \yii\httpclient\Response
      */
-    protected function apiPay($action, $data, $method = 'get')
+    protected function apiPay($action, $data)
     {
-        return (new Client)->createRequest()
-            ->setMethod($method)
-            ->setUrl('https://api.mch.weixin.qq.com/' . $action)
-            ->setData($data)
-            ->send();
+        return $this->httpRequest('https://api.mch.weixin.qq.com/' . $action, $data, [], true);
     }
 
     private function getTicket()
@@ -463,12 +459,12 @@ class Weixin extends Object
         ];
         $param['sign'] = $this->makeSign($param);
         $xml = $this->makeXML($param);
-        $response = $this->apiPay('pay/unifiedorder', $xml, 'post');
-        if (!$response->isOk) {
+        $response = $this->apiPay('pay/unifiedorder', $xml);
+        if (!$response) {
             return false;
         }
 
-        $result = json_decode(json_encode(simplexml_load_string($response->data, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+        $result = json_decode(json_encode(simplexml_load_string($response, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
         if ($result['result_code'] != 'SUCCESS') {
             return false;
         }
@@ -637,5 +633,43 @@ class Weixin extends Object
         }
         $xml .= "</xml>";
         return $xml;
+    }
+
+
+    public function httpRequest($url, $param = array(), $header = array(), $ssl = false, $files = [])
+    {
+        $ch = curl_init();
+        $options = array(
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CONNECTTIMEOUT => 8,
+            CURLOPT_URL => $url,
+            CURLOPT_HEADER => false,
+            CURLOPT_TIMEOUT => 10,
+        );
+        if ($param) {
+            $options[CURLOPT_POST] = 1;
+            if (is_array($param)) {
+                $options[CURLOPT_POSTFIELDS] = http_build_query($param);
+            } else {
+                $options[CURLOPT_POSTFIELDS] = $param;
+            }
+        }
+        if ($header) {
+            $options[CURLOPT_HTTPHEADER] = $header;
+        }
+        if ($ssl) {
+            if ($files && isset($files['cert']) && isset($files['key'])) {
+                curl_setopt($ch, CURLOPT_SSLCERT, $files['cert']);
+                curl_setopt($ch, CURLOPT_SSLKEY, $files['key']);
+            } else {
+                $options[CURLOPT_SSL_VERIFYPEER] = false;
+                $options[CURLOPT_SSL_VERIFYHOST] = false;
+                $options[CURLOPT_SSLVERSION] = 1;
+            }
+        }
+        curl_setopt_array($ch, $options);
+        $output = curl_exec($ch);
+        curl_close($ch);
+        return $output;
     }
 }
