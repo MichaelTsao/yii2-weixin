@@ -107,6 +107,21 @@ class Weixin extends Object
             ->send();
     }
 
+    /**
+     * @param string $action
+     * @param array $data
+     * @param string $method
+     * @return \yii\httpclient\Response
+     */
+    protected function apiPay($action, $data, $method = 'get')
+    {
+        return (new Client)->createRequest()
+            ->setMethod($method)
+            ->setUrl('https://api.mch.weixin.qq.com/' . $action)
+            ->setData($data)
+            ->send();
+    }
+
     private function getTicket()
     {
         $key = 'weixin:ticket';
@@ -430,12 +445,11 @@ class Weixin extends Object
             return false;
         }
 
-        $url = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
         $param = [
             'body' => '大咖说',
             'attach' => 'theattach',
             'out_trade_no' => $order_id,
-            'total_fee' => $price * $this->test_rate,
+            'total_fee' => $price,
             'time_start' => date("YmdHis"),
             'time_expire' => date("YmdHis", time() + 600),
             'goods_tag' => 'a_goods_tag',
@@ -448,13 +462,14 @@ class Weixin extends Object
             'nonce_str' => $this->getNonceStr(),
         ];
         $param['sign'] = $this->makeSign($param);
-        $xml = self::makeXML($param);
-        Yii::warning('wxpay_from:' . $xml);
-        $data = self::request($url, $xml, [], true);
-        Yii::warning('wxpay_back:' . $data);
-        $result = json_decode(json_encode(simplexml_load_string($data, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+        $xml = $this->makeXML($param);
+        $response = $this->apiPay('pay/unifiedorder', $xml, 'post');
+        if (!$response->isOk) {
+            return false;
+        }
+
+        $result = json_decode(json_encode(simplexml_load_string($response->data, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
         if ($result['result_code'] != 'SUCCESS') {
-            Yii::warning('wxpay_fail');
             return false;
         }
 
@@ -466,7 +481,6 @@ class Weixin extends Object
             'signType' => 'MD5',
         ];
         $js_param['paySign'] = $this->makeSign($js_param);
-        Yii::warning('wxpay_result:' . json_encode($js_param));
         return json_encode($js_param);
     }
 
@@ -603,5 +617,25 @@ class Weixin extends Object
             });
             ";
         $view->registerJs($script);
+    }
+
+    public function makeXML($param)
+    {
+        if (!is_array($param)
+            || count($param) <= 0
+        ) {
+            return false;
+        }
+
+        $xml = "<xml>";
+        foreach ($param as $key => $val) {
+            if (is_numeric($val)) {
+                $xml .= "<" . $key . ">" . $val . "</" . $key . ">";
+            } else {
+                $xml .= "<" . $key . "><![CDATA[" . $val . "]]></" . $key . ">";
+            }
+        }
+        $xml .= "</xml>";
+        return $xml;
     }
 }
