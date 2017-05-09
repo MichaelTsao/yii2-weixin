@@ -465,7 +465,7 @@ class Weixin extends Object
         }
 
         $result = json_decode(json_encode(simplexml_load_string($response, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
-        if ($result['result_code'] != 'SUCCESS') {
+        if (!isset($result['result_code']) || $result['result_code'] != 'SUCCESS') {
             return false;
         }
 
