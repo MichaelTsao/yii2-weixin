@@ -435,14 +435,14 @@ class Weixin extends Object
     /*
      * 发起支付
      */
-    public function payRequest($open_id, $order_id, $price, $back_url)
+    public function payRequest($name, $open_id, $order_id, $price, $back_url)
     {
         if (!$open_id) {
             return false;
         }
 
         $param = [
-            'body' => '大咖说',
+            'body' => $name,
             'attach' => 'theattach',
             'out_trade_no' => $order_id,
             'total_fee' => $price,
