@@ -457,7 +457,7 @@ class Weixin extends Object
             'trade_type' => 'JSAPI',
             'openid' => $open_id,
             'appid' => $this->appId,
-            'mch_id' => $this->appMchId,
+            'mch_id' => $this->mchId,
             'spbill_create_ip' => $_SERVER['REMOTE_ADDR'],
             'nonce_str' => $this->getNonceStr(),
         ];
