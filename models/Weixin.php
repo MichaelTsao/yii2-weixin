@@ -109,7 +109,7 @@ class Weixin extends Object
 
     /**
      * @param string $action
-     * @param array $data
+     * @param array|string $data
      * @param string $method
      * @return \yii\httpclient\Response
      */
@@ -464,7 +464,8 @@ class Weixin extends Object
             return false;
         }
 
-        $result = json_decode(json_encode(simplexml_load_string($response, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+        $result = json_decode(json_encode(simplexml_load_string($response, 'SimpleXMLElement',
+            LIBXML_NOCDATA)), true);
         if (!isset($result['result_code']) || $result['result_code'] != 'SUCCESS') {
             return false;
         }
@@ -496,22 +497,19 @@ class Weixin extends Object
         if ((string)$xml->return_code[0] == 'SUCCESS' && (string)$xml->result_code[0] == 'SUCCESS') {
             $vender_str = $postdata;
             $out_trade_no = (string)$xml->out_trade_no[0];
-            if (strstr($out_trade_no, '_')) {
-                $tmp = explode('_', $out_trade_no);
-                $out_trade_no = $tmp[0];
-            }
             $trade_no = (string)$xml->transaction_id[0];
 
             $rstr = $this->getNonceStr();
-            $sign = strtoupper(md5("appid=" . $this->appId . "&mch_id=" . $this->appMchId . "&nonce_str=$rstr&transaction_id=$trade_no&key=" . $this->appPayKey));
+            $sign = strtoupper(md5("appid=" . $this->appId . "&mch_id=" . $this->mchId .
+                "&nonce_str=$rstr&transaction_id=$trade_no&key=" . $this->mchKey));
             $data = "<xml>
                            <appid>" . $this->appId . "</appid>
-                           <mch_id>" . $this->appMchId . "</mch_id>
+                           <mch_id>" . $this->mchId . "</mch_id>
                            <nonce_str>$rstr</nonce_str>
                            <transaction_id>$trade_no</transaction_id>
                            <sign>$sign</sign>
                         </xml>";
-            $result = self::request('https://api.mch.weixin.qq.com/pay/orderquery', $data);
+            $result = $this->apiPay('pay/orderquery', $data);
 
             Yii::warning('wx_check_result:' . $result);
             $check_xml = simplexml_load_string($result);
@@ -519,15 +517,20 @@ class Weixin extends Object
                 $check_result = true;
             }
         }
-        echo "<xml>
+
+        $payResult = new PayResult();
+        $payResult->output = "<xml>
                     <return_code><![CDATA[SUCCESS]]></return_code>
                     <return_msg><![CDATA[OK]]></return_msg>
                   </xml>";
+        $payResult->result = $check_result;
         if ($check_result) {
-            return [$out_trade_no, $trade_no, $vender_str];
-        } else {
-            return false;
+            $payResult->orderId = $out_trade_no;
+            $payResult->vendorOrderId = $trade_no;
+            $payResult->vendorString = $vender_str;
         }
+
+        return $payResult;
     }
 
     /*
