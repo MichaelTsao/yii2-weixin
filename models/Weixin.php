@@ -487,15 +487,13 @@ class Weixin extends Object
     public function payConfirm()
     {
         $check_result = false;
-        $vender_str = '';
         $out_trade_no = '';
         $trade_no = '';
 
-        $postdata = file_get_contents("php://input");
-        Yii::warning('wx_result:' . $postdata);
-        $xml = simplexml_load_string($postdata);
+        $postData = file_get_contents("php://input");
+        Yii::warning('wx_result:' . $postData);
+        $xml = simplexml_load_string($postData);
         if ((string)$xml->return_code[0] == 'SUCCESS' && (string)$xml->result_code[0] == 'SUCCESS') {
-            $vender_str = $postdata;
             $out_trade_no = (string)$xml->out_trade_no[0];
             $trade_no = (string)$xml->transaction_id[0];
 
@@ -524,11 +522,9 @@ class Weixin extends Object
                     <return_msg><![CDATA[OK]]></return_msg>
                   </xml>";
         $payResult->result = $check_result;
-        if ($check_result) {
-            $payResult->orderId = $out_trade_no;
-            $payResult->vendorOrderId = $trade_no;
-            $payResult->vendorString = $vender_str;
-        }
+        $payResult->vendorString = $postData;
+        $payResult->orderId = $out_trade_no;
+        $payResult->vendorOrderId = $trade_no;
 
         return $payResult;
     }
