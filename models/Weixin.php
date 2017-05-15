@@ -559,6 +559,44 @@ class Weixin extends Object
     }
 
     /**
+     * 小程序推送
+     *
+     * @param string $template
+     * @param string $open_id
+     * @param array $param
+     * @param string $formId
+     * @param string $page
+     * @return bool|mixed
+     */
+    public function pushWxapp($template, $open_id, $param, $formId, $page = '')
+    {
+        if (!$open_id || !$template || !$formId) {
+            return false;
+        }
+
+        $params = [];
+        foreach ($param as $key => $value) {
+            $params[$key] = ['value' => $value];
+        }
+
+        $data = [
+            'touser' => $open_id,
+            'template_id' => $template,
+            'form_id' => $formId,
+            'data' => $params,
+        ];
+        if ($page) {
+            $data['page'] = $page;
+        }
+        $response = $this->api('message/wxopen/template/send?access_token=' . $this->getServerToken(),
+            $data, 'post');
+        if ($response->isOk) {
+            return $response->data;
+        }
+        return false;
+    }
+
+    /**
      * 判断请求是否发自微信
      */
     public function getIsWeixin()
