@@ -591,13 +591,13 @@ class Weixin extends Object
             $data['page'] = $page;
         }
         $url = 'message/wxopen/template/send?access_token=' . $this->getServerToken();
-        $response = $this->api($url,
-            $data, 'post');
-        if ($response->isOk) {
+        $response = $this->api($url, $data, 'post');
+
+        if (!$response->isOk || !isset($response->data['errcode']) || $response->data['errcode'] != 0) {
             Yii::warning('Weixin pushWxapp:' . $url . ':' . json_encode($response->data));
-            return $response->data;
+            return false;
         }
-        return false;
+        return true;
     }
 
     /**
