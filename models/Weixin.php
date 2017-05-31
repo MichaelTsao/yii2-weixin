@@ -316,6 +316,8 @@ class Weixin extends Object
             if ($response->isOk && isset($response->data['access_token'])) {
                 $access_token = $response->data['access_token'];
                 Yii::$app->redis->setex($key, 3600, $access_token);
+            } else {
+                Yii::warning('Weixin getServerToken:' . json_encode($response->data));
             }
         }
 
@@ -588,10 +590,11 @@ class Weixin extends Object
         if ($page) {
             $data['page'] = $page;
         }
-        $response = $this->api('message/wxopen/template/send?access_token=' . $this->getServerToken(),
+        $url = 'message/wxopen/template/send?access_token=' . $this->getServerToken();
+        $response = $this->api($url,
             $data, 'post');
         if ($response->isOk) {
-            Yii::warning('pushWxapp Result:' . json_encode($response->data));
+            Yii::warning('Weixin pushWxapp:' . $url . ':' . json_encode($response->data));
             return $response->data;
         }
         return false;
