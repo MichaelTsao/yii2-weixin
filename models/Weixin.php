@@ -595,7 +595,7 @@ class Weixin extends Object
         $response = $this->api($url, $data, 'post');
 
         if (!$response->isOk || !isset($response->data['errcode']) || $response->data['errcode'] != 0) {
-            Yii::warning('Weixin pushWxapp:' . $url . ':' . json_encode($response->data));
+            Yii::warning('Weixin pushWxapp:' . $url . ':' . json_encode($response->data) . ':' . json_encode($data));
             return false;
         }
         return true;
