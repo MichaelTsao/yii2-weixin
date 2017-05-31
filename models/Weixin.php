@@ -591,6 +591,7 @@ class Weixin extends Object
         $response = $this->api('message/wxopen/template/send?access_token=' . $this->getServerToken(),
             $data, 'post');
         if ($response->isOk) {
+            Yii::warning('pushWxapp Result:' . json_encode($response->data));
             return $response->data;
         }
         return false;
