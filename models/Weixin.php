@@ -316,6 +316,7 @@ class Weixin extends Object
             if ($response->isOk && isset($response->data['access_token'])) {
                 $access_token = $response->data['access_token'];
                 Yii::$app->redis->setex($key, 3600, $access_token);
+                Yii::warning('Weixin getServerToken OK:' . json_encode($response->data));
             } else {
                 Yii::warning('Weixin getServerToken:' . json_encode($response->data));
             }
