@@ -304,7 +304,7 @@ class Weixin extends Object
      */
     private function getServerToken()
     {
-        $key = 'weixin:server_token';
+        $key = 'weixin:' . $this->appId . ':server_token';
 
         if (!$access_token = Yii::$app->redis->get($key)) {
             $response = $this->api('token', [
@@ -327,7 +327,7 @@ class Weixin extends Object
 
     public function getAppTokenName()
     {
-        return 'weixin:app_token';
+        return 'weixin:' . $this->appId . ':app_token';
     }
 
     /**
@@ -366,7 +366,7 @@ class Weixin extends Object
 
     public function getWebTokenName()
     {
-        return 'weixin:web_token';
+        return 'weixin:' . $this->appId . ':web_token';
     }
 
     /**
