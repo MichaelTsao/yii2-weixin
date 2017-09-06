@@ -33,6 +33,7 @@ class Weixin extends Object
     public $certKey;
 
     public $openId;
+    public $unionId;
 
     protected $timestamp;
     protected $nonceStr;
@@ -359,6 +360,9 @@ class Weixin extends Object
         if ($response->isOk && isset($response->data['openid'])) {
             Yii::$app->redis->setex($this->appTokenName, 7000, $response->data['session_key']);
             $this->openId = $response->data['openid'];
+            if (isset($response->data['unionid'])) {
+                $this->unionId = $response->data['unionid'];
+            }
             return $response->data;
         }
         return false;
