@@ -461,7 +461,7 @@ class Weixin extends Object
             'openid' => $open_id,
             'appid' => $this->appId,
             'mch_id' => $this->mchId,
-            'spbill_create_ip' => $_SERVER['REMOTE_ADDR'],
+            'spbill_create_ip' => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : gethostbyname(trim(`hostname`)),
             'nonce_str' => $this->getNonceStr(),
         ];
         $param['sign'] = $this->makeSign($param);
