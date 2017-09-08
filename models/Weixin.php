@@ -178,8 +178,6 @@ class Weixin extends Object
      */
     public function refund($orderId, $money, $refundId)
     {
-        $refund_id = Logic::getOrderId();
-        $url = 'https://api.mch.weixin.qq.com/secapi/pay/refund';
         $param = [
             'appid' => $this->appId,
             'mch_id' => $this->appMchId,
@@ -190,16 +188,17 @@ class Weixin extends Object
             'refund_fee' => $money * 100,
             'op_user_id' => $this->appMchId,
         ];
-        $param['sign'] = $this->makeMySign($param);
-//        var_dump($param);
-        $xml = Logic::makeXML($param);
-        $data = Logic::request($url, $xml, [], true, ['cert' => $this->certFile, 'key' => $this->certKey]);
-//        var_dump($data);
-        $result = json_decode(json_encode(simplexml_load_string($data, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+        $param['sign'] = $this->makeSign($param);
+        $xml = $this->makeXML($param);
+        $response = $this->apiPay('secapi/pay/refund', $xml);
+        if (!$response) {
+            return false;
+        }
+        $result = json_decode(json_encode(simplexml_load_string($response->data, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
         if ($result['return_code'] != 'SUCCESS') {
             return false;
         }
-        return $refund_id;
+        return true;
     }
 
     /*
