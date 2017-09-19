@@ -186,7 +186,6 @@ class Weixin extends Object
             'out_refund_no' => $refundId,
             'total_fee' => $money * 100,
             'refund_fee' => $money * 100,
-            'op_user_id' => $this->appMchId,
         ];
         $param['sign'] = $this->makeSign($param);
         $xml = $this->makeXML($param);
