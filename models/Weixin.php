@@ -180,7 +180,7 @@ class Weixin extends Object
     {
         $param = [
             'appid' => $this->appId,
-            'mch_id' => $this->appMchId,
+            'mch_id' => $this->mchId,
             'nonce_str' => $this->getNonceStr(),
             'out_trade_no' => $orderId,
             'out_refund_no' => $refundId,
