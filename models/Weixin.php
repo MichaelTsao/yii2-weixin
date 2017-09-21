@@ -114,9 +114,9 @@ class Weixin extends Object
      * @param string $method
      * @return \yii\httpclient\Response
      */
-    protected function apiPay($action, $data)
+    protected function apiPay($action, $data, $certFile = false)
     {
-        return $this->httpRequest('https://api.mch.weixin.qq.com/' . $action, $data, [], true);
+        return $this->httpRequest('https://api.mch.weixin.qq.com/' . $action, $data, [], true, $certFile);
     }
 
     private function getTicket()
@@ -189,7 +189,7 @@ class Weixin extends Object
         ];
         $param['sign'] = $this->makeSign($param);
         $xml = $this->makeXML($param);
-        $response = $this->apiPay('secapi/pay/refund', $xml);
+        $response = $this->apiPay('secapi/pay/refund', $xml, true);
         if (!$response) {
             return false;
         }
@@ -681,7 +681,7 @@ class Weixin extends Object
     }
 
 
-    public function httpRequest($url, $param = array(), $header = array(), $ssl = false, $files = [])
+    public function httpRequest($url, $param = array(), $header = array(), $ssl = false, $files = false)
     {
         $ch = curl_init();
         $options = array(
@@ -703,9 +703,9 @@ class Weixin extends Object
             $options[CURLOPT_HTTPHEADER] = $header;
         }
         if ($ssl) {
-            if ($files && isset($files['cert']) && isset($files['key'])) {
-                curl_setopt($ch, CURLOPT_SSLCERT, $files['cert']);
-                curl_setopt($ch, CURLOPT_SSLKEY, $files['key']);
+            if ($files && $this->certFile && $this->certKey) {
+                curl_setopt($ch, CURLOPT_SSLCERT, $this->certFile);
+                curl_setopt($ch, CURLOPT_SSLKEY, $this->certKey);
             } else {
                 $options[CURLOPT_SSL_VERIFYPEER] = false;
                 $options[CURLOPT_SSL_VERIFYHOST] = false;
