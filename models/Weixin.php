@@ -193,7 +193,7 @@ class Weixin extends Object
         if (!$response) {
             return false;
         }
-        $result = json_decode(json_encode(simplexml_load_string($response->data, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+        $result = json_decode(json_encode(simplexml_load_string($response, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
         if ($result['return_code'] != 'SUCCESS') {
             return false;
         }
