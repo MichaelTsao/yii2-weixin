@@ -620,9 +620,8 @@ class Weixin extends Object
 
     /**
      * @param $view \yii\web\View
-     * @param $config \caoxiang\weixin\ShareData
      */
-    public function share($view, $config)
+    public function setupView($view)
     {
         $view->registerJsFile('http://res.wx.qq.com/open/js/jweixin-1.0.0.js', ['depends' => 'yii\web\YiiAsset']);
 
@@ -641,7 +640,15 @@ class Weixin extends Object
                 });
             ";
         $view->registerJs($script);
+    }
 
+    /**
+     * @param $view \yii\web\View
+     * @param $config \caoxiang\weixin\ShareData
+     */
+    public function share($view, $config)
+    {
+        $this->setupView($view);
         $script = "
             wx.ready(function () {
                 wx.onMenuShareAppMessage({
