@@ -8,9 +8,9 @@
 
 namespace caoxiang\weixin;
 
+use Yii;
 use yii\base\Object;
 use yii\httpclient\Client;
-use Yii;
 
 /**
  * Class Weixin
@@ -175,6 +175,11 @@ class Weixin extends Object
 
     /**
      * 退款
+     *
+     * @param $orderId string
+     * @param $money int
+     * @param $refundId string
+     * @return bool
      */
     public function refund($orderId, $money, $refundId)
     {
@@ -203,35 +208,33 @@ class Weixin extends Object
     /*
      * 企业向用户付款
      */
-    public function payToUser($open_id, $money, $ip = '')
+    public function payToUser($orderId, $openId, $money, $desc, $ip = '')
     {
-        if (!$ip) {
+        if (!$ip && isset($_SERVER['SERVER_ADDR'])) {
             $ip = $_SERVER['SERVER_ADDR'];
         }
-        $pay_id = self::getOrderId();
-        $url = 'https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers';
         $param = [
             'mch_appid' => $this->appId,
-            'mchid' => $this->appMchId,
+            'mchid' => $this->mchId,
             'nonce_str' => $this->getNonceStr(),
-            'partner_trade_no' => $pay_id,
-            'openid' => $open_id,
+            'partner_trade_no' => $orderId,
+            'openid' => $openId,
             'check_name' => 'NO_CHECK',
-            'amount' => $money * $this->test_rate,
-            'desc' => '『大咖说』的『问咖』结算',
+            'amount' => $money,
+            'desc' => $desc,
             'spbill_create_ip' => $ip,
         ];
         $param['sign'] = $this->makeSign($param);
-        $xml = self::makeXML($param);
-        Yii::warning('wxpay_touser_from:' . $xml);
-        $data = self::request($url, $xml, [], true, ['cert' => Yii::getAlias($this->certFile), 'key' => Yii::getAlias($this->certKey)]);
-        Yii::warning('wxpay_touser_back:' . $data);
-        $result = json_decode(json_encode(simplexml_load_string($data, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
-        if ($result['result_code'] != 'SUCCESS') {
-            Yii::warning('wxpay_touser_fail');
+        $xml = $this->makeXML($param);
+        $response = $this->apiPay('mmpaymkttransfers/promotion/transfers', $xml, true);
+        if (!$response) {
             return false;
         }
-        return $pay_id;
+        $result = json_decode(json_encode(simplexml_load_string($response, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+        if ($result['result_code'] != 'SUCCESS') {
+            return false;
+        }
+        return true;
     }
 
     /**
