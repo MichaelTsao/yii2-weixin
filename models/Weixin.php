@@ -197,13 +197,11 @@ class Weixin extends Object
             'refund_fee' => $money * 100,
         ];
         $param['sign'] = $this->makeSign($param);
-        $xml = $this->makeXML($param);
-        $response = $this->apiPay('secapi/pay/refund', $xml, true);
-        if (!$response) {
+        $response = $this->apiPay('secapi/pay/refund', $param, true);
+        if (!$response->isOk && isset($response->data['result_code'])) {
             return false;
         }
-        $result = json_decode(json_encode(simplexml_load_string($response, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
-        if ($result['return_code'] != 'SUCCESS') {
+        if ($response->data['result_code'] != 'SUCCESS') {
             return false;
         }
         return true;
@@ -229,13 +227,11 @@ class Weixin extends Object
             'spbill_create_ip' => $ip,
         ];
         $param['sign'] = $this->makeSign($param);
-        $xml = $this->makeXML($param);
-        $response = $this->apiPay('mmpaymkttransfers/promotion/transfers', $xml, true);
-        if (!$response) {
+        $response = $this->apiPay('mmpaymkttransfers/promotion/transfers', $param, true);
+        if (!$response->isOk && isset($response->data['result_code'])) {
             return false;
         }
-        $result = json_decode(json_encode(simplexml_load_string($response, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
-        if ($result['result_code'] != 'SUCCESS') {
+        if ($response->data['result_code'] != 'SUCCESS') {
             return false;
         }
         return true;
@@ -470,14 +466,12 @@ class Weixin extends Object
             'nonce_str' => $this->getNonceStr(),
         ];
         $param['sign'] = $this->makeSign($param);
-        $xml = $this->makeXML($param);
-        $response = $this->apiPay('pay/unifiedorder', $xml);
-        if (!$response) {
+        $response = $this->apiPay('pay/unifiedorder', $param);
+        if (!$response->isOk && isset($response->data['result_code'])) {
             return false;
         }
 
-        $result = json_decode(json_encode(simplexml_load_string($response, 'SimpleXMLElement',
-            LIBXML_NOCDATA)), true);
+        $result = $response->data;
         if (!isset($result['result_code']) || $result['result_code'] != 'SUCCESS') {
             return false;
         }
@@ -626,6 +620,8 @@ class Weixin extends Object
     }
 
     /**
+     * 在View层的页面中初始化微信JS库
+     *
      * @param $view \yii\web\View
      */
     public function setupView($view)
@@ -672,25 +668,5 @@ class Weixin extends Object
             });
             ";
         $view->registerJs($script);
-    }
-
-    public function makeXML($param)
-    {
-        if (!is_array($param)
-            || count($param) <= 0
-        ) {
-            return false;
-        }
-
-        $xml = "<xml>";
-        foreach ($param as $key => $val) {
-            if (is_numeric($val)) {
-                $xml .= "<" . $key . ">" . $val . "</" . $key . ">";
-            } else {
-                $xml .= "<" . $key . "><![CDATA[" . $val . "]]></" . $key . ">";
-            }
-        }
-        $xml .= "</xml>";
-        return $xml;
     }
 }
