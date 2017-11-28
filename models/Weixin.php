@@ -81,16 +81,7 @@ class Weixin extends Object
             $http->setFormat(Client::FORMAT_JSON);
         }
 
-//        $response = null;
-//        for ($i = 0; $i < 3; $i++) {
-//            $response = $http->send();
-//            if ($response->isOk) {
-//                break;
-//            }
-//        }
-
-        $response = $http->send();
-        return $response;
+        return $http->send();
     }
 
     /**
@@ -111,12 +102,25 @@ class Weixin extends Object
     /**
      * @param string $action
      * @param array|string $data
-     * @param string $method
+     * @param bool $certFile
      * @return \yii\httpclient\Response
+     * @internal param string $method
      */
     protected function apiPay($action, $data, $certFile = false)
     {
-        return $this->httpRequest('https://api.mch.weixin.qq.com/' . $action, $data, [], true, $certFile);
+        $http = (new Client)->createRequest()
+            ->setMethod('post')
+            ->setUrl('https://api.mch.weixin.qq.com/' . $action)
+            ->setData($data)
+            ->setFormat(Client::FORMAT_XML);
+        if ($certFile) {
+            $http->setOptions([
+                'sslLocalCert' => $this->certFile,
+                'sslLocalPk' => $this->certKey,
+            ]);
+        }
+
+        return $http->send();
     }
 
     private function getTicket()
@@ -688,43 +692,5 @@ class Weixin extends Object
         }
         $xml .= "</xml>";
         return $xml;
-    }
-
-
-    public function httpRequest($url, $param = array(), $header = array(), $ssl = false, $files = false)
-    {
-        $ch = curl_init();
-        $options = array(
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CONNECTTIMEOUT => 8,
-            CURLOPT_URL => $url,
-            CURLOPT_HEADER => false,
-            CURLOPT_TIMEOUT => 10,
-        );
-        if ($param) {
-            $options[CURLOPT_POST] = 1;
-            if (is_array($param)) {
-                $options[CURLOPT_POSTFIELDS] = http_build_query($param);
-            } else {
-                $options[CURLOPT_POSTFIELDS] = $param;
-            }
-        }
-        if ($header) {
-            $options[CURLOPT_HTTPHEADER] = $header;
-        }
-        if ($ssl) {
-            if ($files && $this->certFile && $this->certKey) {
-                curl_setopt($ch, CURLOPT_SSLCERT, $this->certFile);
-                curl_setopt($ch, CURLOPT_SSLKEY, $this->certKey);
-            } else {
-                $options[CURLOPT_SSL_VERIFYPEER] = false;
-                $options[CURLOPT_SSL_VERIFYHOST] = false;
-                $options[CURLOPT_SSLVERSION] = 1;
-            }
-        }
-        curl_setopt_array($ch, $options);
-        $output = curl_exec($ch);
-        curl_close($ch);
-        return $output;
     }
 }
