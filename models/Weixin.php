@@ -432,6 +432,7 @@ class Weixin extends Object
             'code' => $code,
             'grant_type' => 'authorization_code'
         ]);
+        Yii::warning('yii2-weixin get web auth result: ' . json_encode($response->data));
         if ($response->isOk && isset($response->data['openid'])) {
             $this->openId = $response->data['openid'];
             Yii::$app->redis->setex($this->webTokenName, 7000, $response->data['access_token']);
