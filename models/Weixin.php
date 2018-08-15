@@ -670,4 +670,26 @@ class Weixin extends Object
             ";
         $view->registerJs($script);
     }
+
+    /**
+     * 接口方式获取关注用户列表
+     *
+     * @param $open_id
+     * @return bool
+     *
+     */
+    public function getFollowedUsersFromServer($open_id = null)
+    {
+        $response = $this->api('user/get', [
+            'access_token' => $this->getServerToken(),
+            'openid' => isset($open_id) ? $open_id : '',
+            'lang' => 'zh_CN',
+        ]);
+
+        if ($response->isOk) {
+            return $response->data;
+        }
+
+        return false;
+    }
 }
